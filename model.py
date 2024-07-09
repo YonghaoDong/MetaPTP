@@ -211,7 +211,7 @@ class MetaPTP(torch.nn.Module):
         h = h.view(N, -1, self.rnn_fx.num_layers)
         h = h.permute(2, 0, 1).contiguous()
 
-        #########  w/ meta ###############
+
         for t in range(L1):
             q = self.embed_q(h[-1])                         # N x d
             att = self.attention(q, k[t], mask[t])          # N x Nn
@@ -219,14 +219,7 @@ class MetaPTP(torch.nn.Module):
             x_t = x_t.squeeze(-2)                           # N x d
             x_t = torch.cat((x_t, -s[t]*meta_weight[t]), -1).unsqueeze(0)
             _, h = self.rnn_fx(x_t, h)
-        ############################################
 
-        # ##########  w/o meta ###############
-        # wo_meta_weight_2 = torch.ones_like(meta_weight_2)
-        # for t in range(L1):                   # N x d
-        #     x_t = self.wo_meta(x[t].unsqueeze(0))
-        #     _, h = self.rnn_fx(x_t, h)
-        # #############################################
 
         x = h[-1]
         if y is None: return x
